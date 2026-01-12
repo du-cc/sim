@@ -234,5 +234,3 @@ export async function interact(module, endpoint, data) {
     CSRF
   );
 }
-
-await interact("timetable", "week");
