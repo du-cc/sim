@@ -23,7 +23,7 @@ if (nr_expire == null || nr_expire < Date.now() || nr_cookies == null) {
 async function getVersion(module, endpoint) {
   // var moduleInfo_req = await request("get", `https://simattendance.simge.edu.sg/StudentApp/moduleservices/moduleinfo?${moduleVersion}`)
 
-  var map = JSON.parse(await store("get", "map", null, "json"));
+  var map = JSON.parse(await store("get", "map", null, "json", false));
 
   if (!map[module]) {
     log(
@@ -99,7 +99,7 @@ async function getVersion(module, endpoint) {
     )[2];
 
     map[module].apiVersion[endpoint] = latestApiVersion;
-    await store("write", "map", JSON.stringify(map, null, 2), "json");
+    await store("write", "map", JSON.stringify(map, null, 2), "json", false);
   }
 
   if (moduleValidation) {
@@ -113,7 +113,7 @@ async function getVersion(module, endpoint) {
     ).versionToken;
 
     map.moduleVersion = latestModuleVersion;
-    await store("write", "map", JSON.stringify(map, null, 2), "json");
+    await store("write", "map", JSON.stringify(map, null, 2), "json", false);
   }
 
   return {
@@ -219,7 +219,7 @@ export async function interact(module, endpoint, data) {
   var apiVersion = api_module_version.apiVersion;
   var moduleVersion = api_module_version.moduleVersion;
 
-  var map = await store("get", "map", null, "json");
+  var map = await store("get", "map", null, "json", false);
 
   data.versionInfo.apiVersion = apiVersion;
   data.versionInfo.moduleVersion = moduleVersion;

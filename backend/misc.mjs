@@ -91,9 +91,9 @@ export function parseCookies(header) {
     .join("; "); // Join for the request header
 }
 
-export async function store(action, v, data, e=null) {
-  var end = e == null ? 'txt' : e
-  var path = `./data/${v}.${end}`;
+export async function store(action, v, data, e = null, secret = true) {
+  var end = e == null ? "txt" : e;
+  var path = secret ? `./data/${v}.${end}` : `./${v}.${end}`;
   if (action == "get") {
     if (!(await files.exists(path))) {
       return null;
