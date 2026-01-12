@@ -1,0 +1,46 @@
+{
+  "moduleVersion": "y__tZN3LinIZE4Doytz8aw",
+  "timetable": {
+    "script": "StudentApp.Timetable.Timetable.mvc.js",
+    "path": "screenservices/StudentApp/Timetable/Timetable/",
+    "method": "post",
+    "endpoints": {
+      "day": "DataActionDayPrepration",
+      "week": "DataActionWeekPreparation",
+      "month": "DataActionMonthPreparation"
+    },
+    "mockData": {
+      "universal": {
+        "versionInfo": {
+          "moduleVersion": "y__tZN3LinIZE4Doytz8aw",
+          "apiVersion": "0"
+        },
+        "viewName": "Timetable.Timetable",
+        "screenData": {
+          "variables": {
+            "IsShowCalendar": false,
+            "IsDay": false,
+            "IsWeek": false,
+            "IsMonth": false,
+            "EventList": {
+              "List": [],
+              "EmptyListItem": "1900-01-01T00:00:00"
+            },
+            "IsShowLoading": true,
+            "IsRemoveContentWrapper": false,
+            "IsAVE": false,
+            "IsFromHome": false,
+            "_isFromHomeInDataFetchStatus": 1,
+            "SelectedDate": "2026-01-01",
+            "_selectedDateInDataFetchStatus": 1
+          }
+        }
+      }
+    },
+    "apiVersion": {
+      "day": "5ho7yW80yjJwz2lx5hCaTQ",
+      "week": "C6dGy1emWArQArnOz67rmA",
+      "month": ""
+    }
+  }
+}
