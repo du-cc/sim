@@ -1,0 +1,109 @@
+:root {
+  --fg: #d4d4d4;
+  --bg: #020202;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background: var(--bg);
+  color: var(--fg) !important;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.label {
+  color: color-mix(in srgb, var(--fg) 50%, transparent 50%);
+}
+
+.input > input[type="text"] {
+  background-color: transparent;
+  box-shadow: none;
+  color: var(--fg);
+  border: 1px solid color-mix(in srgb, var(--fg) 50%, transparent 50%);
+  border-radius: 0.3em;
+  padding: 0.7em 1em;
+  transition-duration: 0.3s;
+}
+
+.input > input[type="text"]:hover {
+  box-shadow: 0 0 3px color-mix(in srgb, var(--fg) 70%, transparent 20%);
+}
+
+.input > input[type="text"]:focus {
+  outline: none;
+  box-shadow: 0 0 5px color-mix(in srgb, var(--fg) 70%, transparent 20%);
+}
+
+.download-btn {
+  padding: 0.7em 1em;
+  font-size: 1em;
+  background: color-mix(in srgb, var(--fg) 5%, var(--bg) 95%);
+  color: var(--fg);
+  border-radius: 0.3em;
+  box-shadow: none;
+  outline: none;
+  border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent 90%);
+  cursor: pointer;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
+
+.download-btn:hover {
+  background: color-mix(in srgb, var(--fg) 10%, var(--bg) 90%);
+}
+
+.download-btn:active {
+  background: color-mix(in srgb, var(--fg) 12%, var(--bg) 88%);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1em;
+  flex: 1;
+  padding: 1em;
+  border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent 90%);
+  border-radius: 0.3em;
+  height: 80dvh;
+  overflow-y: scroll;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+}
+
+.log {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  overflow-y: scroll;
+}
+
+.img {
+  width: 60%;
+}
+
+.c {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+}
+
+@media screen and (max-width: 768px) {
+  .content {
+    flex-direction: column;
+  }
+  .container {
+    overflow-y: hidden;
+  }
+  .img {
+    width: 100%;
+  }
+}

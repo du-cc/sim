@@ -1,0 +1,198 @@
+<html>
+  <head>
+    <title>Timetable downloader</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://site-assets.fontawesome.com/releases/v7.1.0/css/solid.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://site-assets.fontawesome.com/releases/v7.1.0/css/fontawesome.css"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="top">
+      <h1>Timetable downloader</h1>
+    </div>
+    <div class="content">
+      <div class="container">
+        <div class="c">
+          <div class="input">
+            <span class="label">Cookie</span>
+            <input type="text" id="cookie" />
+          </div>
+          <div class="info">
+            <details>
+              <summary>How to get cookies</summary>
+              <p>Prepare as you will go through some very technical stuff.</p>
+              <hr />
+              <p style="font-size: 1.3em; font-weight: bold">
+                How to identify your browser is Chromium (Chrome) or Gecko
+                (Firefox)
+              </p>
+              <p>1. Open inspect element (Ctrl + Shift + I) for most users.</p>
+              <p>
+                If the popped up panel looks like this, you are using Chromium
+                <b>(we will call it Chrome browser after this)</b>
+              </p>
+              <img
+                src="./assets/chrome.png"
+                alt="Chrome devtool panel"
+                class="img"
+              />
+              <hr />
+              <p>
+                If the popped up panel looks like this, you are using Gecko
+                <b>(we will call it Firefox browser after this)</b>
+              </p>
+              <img
+                src="./assets/firefox.png"
+                alt="Firefox devtool panel"
+                class="img"
+              />
+              <hr />
+              <p style="font-size: 1.3em; font-weight: bold">Steps</p>
+              <p>
+                0. <b>MAKE SURE</b> that you have selected <b>YES</b> in
+                <b>Stay signed in?</b> question.
+              </p>
+              <p style="font-size: 0.9em; margin-left: 1em">
+                If not, logout and login again using your
+                <b>SIM Mymail</b> account, then click <b>YES</b> in
+                <b>Stay signed in?</b> question.
+              </p>
+              <p>
+                1. Open inspect element (Ctrl + Shift + I) for most users
+                <b>HERE</b>
+              </p>
+              <p style="font-size: 0.9em; margin-left: 1em">
+                Mac users using Safari can refer
+                <a
+                  href="https://developer.apple.com/documentation/safari-developer-tools/inspecting-safari-macos"
+                  >this</a
+                >. I can't help you.
+              </p>
+              <p>
+                2. Navigate to Network tab (Usually on top of the inspect panel)
+              </p>
+              <p>2.5 We will now call the Network tab as <b>panel</b></p>
+              <p>3. Toggle Persist Logs/Preserve Logs</p>
+              <p style="margin-left: 1em">
+                Firefox users: At the top right location of the panel in network
+                tab, find a Settings icon, click that and toggle
+                <b>Persist Logs</b> ON
+              </p>
+              <p style="margin-left: 1em">
+                Chrome users: Find <b>Preserve Log</b> checkbox under the tab
+                bar of the panel and toggle it ON
+              </p>
+              <p>4. Make sure <b>All</b> is selected</p>
+              <p style="margin-left: 1em">Firefox users:</p>
+              <img
+                src="./assets/firefox_all.png"
+                alt="Firefox all filter option"
+              />
+              <p style="margin-left: 1em">
+                Chrome users: Click the filter icon next to the search icon (At
+                the same row as Preserve Log option), then
+              </p>
+              <img
+                src="./assets/chrome_all.png"
+                alt="Chrome all filter option"
+              />
+              <p>
+                4.5 Duplicate this tab to read further steps because this tab
+                will be used for cookie extracting.
+              </p>
+              <p>
+                5. Click this
+                <a href="https://login.microsoftonline.com/">link</a>
+              </p>
+              <p>
+                6. After redirections, at the page, check first if you are
+                logged into your
+                <b>Mymail account</b>, not <b>your own personal account</b>.
+              </p>
+              <img src="./assets/user.png" alt="" />
+              <p style="margin-left: 1em">
+                If you isn't logged into your Mymail account, logout and login
+                using your <b>Mymail</b> account.
+              </p>
+              <p>
+                7. Going back to the panel, scroll to the upmost and select the
+                first entry.
+              </p>
+              <p style="margin-left: 1em">
+                - Also make sure that the value of <b>Status</b> column for that
+                row is <b>302</b>
+              </p>
+              <img src="./assets/chrome_302.png" alt="Chrome status 302" /><img
+                src="./assets/firefox_302.png"
+                alt="Firefox status 302"
+              />
+              <p style="margin-left: 1em">
+                - If first isn't 302, search lower entries until you find an
+                entry with status code 302.
+              </p>
+              <p>
+                8. Click on that entry. A new panel should pop up at the right
+                side of the panel. Let's call them the <b>Details panel</b>.
+              </p>
+              <details style="margin-left: 1em">
+                <summary>Firefox users</summary>
+                <p>9. Navigate to <b>Cookies</b> tab on the details panel.</p>
+                <p>
+                  9.5 You can hide <b>Response Cookies</b> by clicking on the
+                  text.
+                </p>
+                <p>10. Find <b>Request Cookies</b>.</p>
+                <p>
+                  11. Scroll down to find blue color text:
+                  <b>ESTSAUTHPERSISTENT</b>
+                </p>
+                <p>
+                  11.5 The value should start with "1. and it is a very long
+                  string.
+                </p>
+                <p>12. Right click on that long string and click copy value.</p>
+                <p>13. That's the cookie. Paste it in the input box above!</p>
+              </details>
+              <details style="margin-left: 1em">
+                <summary>Chrome users</summary>
+                <p>9. Navigate to <b>Cookies</b> tab on the details panel.</p>
+                <p>
+                  9.5. If the panel if too narrow, you can expand it by dragging
+                  the border of the panel. Drag until you can read both the Name
+                  and Value column.
+                </p>
+                <p>10. Find <b>ESTSAUTHPERSISTENT</b> in name column.</p>
+                <p>
+                  10.5 The value should start with "1. and it is a very long
+                  string.
+                </p>
+                <p>11. Triple click on the value to select all.</p>
+                <p>12. (Ctrl+C or Right click > copy) to copy it.</p>
+                <p>13. That's the cookie. Paste it in the input box above!</p>
+              </details>
+            </details>
+          </div>
+        </div>
+        <button class="download-btn">
+          <i class="fa-solid fa-calendar-arrow-down"></i> Download!
+        </button>
+      </div>
+      <div class="container">
+        <span class="label">Log</span>
+        <div class="log"></div>
+      </div>
+    </div>
+  </body>
+</html>
