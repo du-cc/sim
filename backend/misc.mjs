@@ -1,4 +1,9 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 import * as files from "files";
+import { sendToClient } from "../main.js";
 
 // debug mode will show all variable values while running
 const DEBUG = true;
@@ -54,6 +59,8 @@ export async function request(
 }
 
 export function log(script, module, action, data, type) {
+  sendToClient("log", [script, module, action, data, type]);
+
   if (type == "error") {
     return console.error(
       "\x1b[31m%s\x1b[0m",
@@ -92,18 +99,24 @@ export function parseCookies(header) {
 }
 
 export async function store(action, v, data, e = null, secret = true) {
+  log("misc.mjs", "hi", "d", "wwf")
   var end = e == null ? "txt" : e;
-  var path = secret ? `./data/${v}.${end}` : `./${v}.${end}`;
+
+  const subFolder = secret ? "data" : ".";
+  const targetPath = path.join(__dirname, subFolder, `${v}.${end}`);
+
   if (action == "get") {
-    if (!(await files.exists(path))) {
+    if (!(await files.exists(targetPath))) {
       return null;
     }
-    return await files.read(path);
+    return await files.read(targetPath);
   }
+
   if (action == "write") {
-    return await files.write(path, data);
+    return await files.write(targetPath, data);
   }
+
   if (action == "delete") {
-    return await files.remove(path);
+    return await files.remove(targetPath);
   }
 }

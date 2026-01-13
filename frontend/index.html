@@ -21,13 +21,28 @@
   <body>
     <div class="top">
       <h1>Timetable downloader</h1>
+      <button class="theme-switch">
+        <i class="fa-solid fa-sun-bright"></i>
+      </button>
     </div>
     <div class="content">
       <div class="container">
         <div class="c">
           <div class="input">
             <span class="label">Cookie</span>
-            <input type="text" id="cookie" />
+            <div>
+              <input type="text" id="cookie" />
+              <button id="save">Save</button>
+            </div>
+            <span class="status hide" id="status">Cookie isn't valid!</span>
+          </div>
+          <div class="input">
+            <span class="label">Range</span>
+            <div style="gap: 1em;">
+              <input type="date" id="cookie" /><span style="align-self: center;">to</span>
+              <input type="date" id="cookie" />
+            </div>
+            <span class="status hide" id="status">Cookie isn't valid!</span>
           </div>
           <div class="info">
             <details>
@@ -185,14 +200,15 @@
             </details>
           </div>
         </div>
-        <button class="download-btn">
+        <button class="download-btn" id="execute">
           <i class="fa-solid fa-calendar-arrow-down"></i> Download!
         </button>
       </div>
       <div class="container">
         <span class="label">Log</span>
-        <div class="log"></div>
+        <div class="log" id="log"></div>
       </div>
     </div>
   </body>
+  <script src="./index.js"></script>
 </html>

@@ -2,8 +2,10 @@
   "name": "sim",
   "version": "1.0.0",
   "description": "Web panel that interacts with SIM API",
-  "main": "index.js",
+  "main": "main.js",
+  "type": "module",
   "scripts": {
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,5 +23,8 @@
   "homepage": "https://github.com/du-cc/sim#readme",
   "dependencies": {
     "files": "^3.0.2"
+  },
+  "devDependencies": {
+    "electron": "^39.2.7"
   }
 }
