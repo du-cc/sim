@@ -7,6 +7,8 @@ body {
   font-family: "Inter", sans-serif;
   background: var(--bg);
   color: var(--fg) !important;
+  padding: 0;
+  margin: 0;
 }
 
 .input {
@@ -17,9 +19,16 @@ body {
 
 .label {
   color: color-mix(in srgb, var(--fg) 50%, transparent 50%);
+  font-size: 0.9em;
 }
 
-.input > input[type="text"] {
+.input > div {
+  display: flex;
+  flex-direction: row;
+  gap: 0.3em;
+}
+
+.input > div > input {
   background-color: transparent;
   box-shadow: none;
   color: var(--fg);
@@ -27,15 +36,26 @@ body {
   border-radius: 0.3em;
   padding: 0.7em 1em;
   transition-duration: 0.3s;
+  flex: 2;
 }
 
-.input > input[type="text"]:hover {
+.input > div > input:hover {
   box-shadow: 0 0 3px color-mix(in srgb, var(--fg) 70%, transparent 20%);
 }
 
-.input > input[type="text"]:focus {
+.input > div > input:focus {
   outline: none;
   box-shadow: 0 0 5px color-mix(in srgb, var(--fg) 70%, transparent 20%);
+}
+
+.input > div > button {
+  padding: 0.7em 1em;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--fg) 5%, var(--bg) 95%);
+  color: var(--fg);
+  border-radius: 0.3em;
+  border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent 90%);
+  transition-duration: 0.3s;
 }
 
 .download-btn {
@@ -44,19 +64,18 @@ body {
   background: color-mix(in srgb, var(--fg) 5%, var(--bg) 95%);
   color: var(--fg);
   border-radius: 0.3em;
-  box-shadow: none;
-  outline: none;
   border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent 90%);
   cursor: pointer;
   transition-duration: 0.3s;
-  transition-timing-function: ease;
 }
 
-.download-btn:hover {
+.download-btn:hover,
+.input > div > button:hover {
   background: color-mix(in srgb, var(--fg) 10%, var(--bg) 90%);
 }
 
-.download-btn:active {
+.download-btn:active,
+.input > div > button:active {
   background: color-mix(in srgb, var(--fg) 12%, var(--bg) 88%);
 }
 
@@ -70,7 +89,9 @@ body {
   border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent 90%);
   border-radius: 0.3em;
   height: 80dvh;
-  overflow-y: scroll;
+  overflow-y: auto;
+  scrollbar-color: color-mix(in srgb, var(--fg) 10%, transparent 90%) transparent;
+  scrollbar-width: thin;
 }
 
 .content {
@@ -83,7 +104,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.3em;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .img {
@@ -96,6 +117,56 @@ body {
   gap: 1.5em;
 }
 
+.status {
+  font-size: 0.9em;
+  transition-duration: 0.3s;
+}
+
+.status.red {
+  color: color-mix(in srgb, red 70%, var(--fg) 30%);
+}
+
+.status.green {
+  color: color-mix(in srgb, green 70%, var(--fg) 30%);
+}
+
+.status.hide {
+  opacity: 0 !important;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1em;
+}
+
+.theme-switch {
+  background-color: transparent;
+  color: var(--fg);
+  border: none;
+  cursor: pointer;
+}
+
+.theme-switch > i {
+  font-size: 2em;
+}
+
+:not(input):not(textarea),
+:not(input):not(textarea)::after,
+:not(input):not(textarea)::before {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(100%);
+}
+
+/* I KNOW THIS WON'T GET RUN AT A MOBILE PHONE
+    Unless.. Windows ARM image running in POCO X3 Pro
+    Read https://www.reddit.com/r/Windows11/comments/1h9bblk/i_managed_to_run_windows_11_on_a_phone/
+*/
 @media screen and (max-width: 768px) {
   .content {
     flex-direction: column;

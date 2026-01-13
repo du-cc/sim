@@ -1,24 +1,21 @@
 import { log, request, parseCookies, store } from "./misc.mjs";
 import * as b2c from "./b2c.mjs";
 
-var MICROSOFT_LOGIN_COOKIE = await store("get", "MICROSOFT_LOGIN_COOKIE")
-if (MICROSOFT_LOGIN_COOKIE == null) { log("outsystems.mjs", "SCRIPT", "ERROR", "No Microsoft Login Cookie Detected.", "error") & process.exit()}
+var MICROSOFT_LOGIN_COOKIE = await store("get", "MICROSOFT_LOGIN_COOKIE");
+if (MICROSOFT_LOGIN_COOKIE == null) {
+  log(
+    "outsystems.mjs",
+    "SCRIPT",
+    "ERROR",
+    "No Microsoft Login Cookie Detected.",
+    "error"
+  ) & process.exit();
+}
 
-var CSRF = await store("get", "csrf")
+var CSRF = await store("get", "csrf");
 
 var nr_expire = await store("get", "nr_expire");
 var nr_cookies = await store("get", "nr_cookies");
-
-if (CSRF == null) {
-  var latestCookie = await authenticate(MICROSOFT_LOGIN_COOKIE);
-  store("write", "csrf", CSRF);
-}
-
-if (nr_expire == null || nr_expire < Date.now() || nr_cookies == null) {
-  CSRF = "T6C+9iB49TLra4jEsMeSckDMNhQ=";
-  var latestCookie = await authenticate(MICROSOFT_LOGIN_COOKIE);
-  store("write", "nr_cookies", latestCookie);
-}
 
 async function getVersion(module, endpoint) {
   // var moduleInfo_req = await request("get", `https://simattendance.simge.edu.sg/StudentApp/moduleservices/moduleinfo?${moduleVersion}`)
@@ -215,21 +212,35 @@ async function authenticate(cookie) {
 }
 
 export async function interact(module, endpoint, data) {
+  if (CSRF == null) {
+    var latestCookie = await authenticate(MICROSOFT_LOGIN_COOKIE);
+    store("write", "csrf", CSRF);
+  }
+
+  if (nr_expire == null || nr_expire < Date.now() || nr_cookies == null) {
+    CSRF = "T6C+9iB49TLra4jEsMeSckDMNhQ=";
+    var latestCookie = await authenticate(MICROSOFT_LOGIN_COOKIE);
+    store("write", "nr_cookies", latestCookie);
+  }
+
   var api_module_version = await getVersion(module, endpoint);
   var apiVersion = api_module_version.apiVersion;
   var moduleVersion = api_module_version.moduleVersion;
 
   var map = await store("get", "map", null, "json", false);
+  map = JSON.parse(map)
 
   data.versionInfo.apiVersion = apiVersion;
   data.versionInfo.moduleVersion = moduleVersion;
+
+  console.log(JSON.stringify(data))
 
   return await request(
     map[module].method,
     `https://simattendance.simge.edu.sg/StudentApp/${map[module].path}${map[module].endpoints[endpoint]}`,
     nr_cookies,
     true,
-    data,
+    JSON.stringify(data),
     "application/json",
     CSRF
   );
