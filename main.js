@@ -32,8 +32,8 @@ app.whenReady().then(() => {
     return await store("write", "MICROSOFT_LOGIN_COOKIE", cookie);
   });
   
-  ipcMain.handle("run", async () => {
-    return await getTimetable();
+  ipcMain.handle("run", async (e, ...args) => {
+    return await getTimetable(...args);
   });
 
   createWindow();

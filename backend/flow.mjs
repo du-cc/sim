@@ -1,6 +1,42 @@
+import { write } from "files";
 import { interact } from "./outsystems.mjs";
 
-export async function getTimetable() {
+var range = [];
+
+export async function getTimetable(d1, d2) {
+  range = [d1, d2];
+  var timetableData = await requestTimetable();
+  var icsData = toICS(timetableData);
+}
+
+async function requestTimetable() {
+  var rangeStart = new Date(range[0]);
+  var rangeEnd = new Date(range[1]);
+
+  var rangeStart_day = rangeStart.getDay();
+  var rangeEnd_day = rangeEnd.getDay();
+
+  if (rangeStart_day !== 0) {
+    rangeStart.setDate(rangeStart.getDate() - rangeStart_day);
+  }
+
+  if (rangeEnd_day !== 0) {
+    rangeEnd.setDate(rangeEnd.getDate() - rangeEnd_day);
+
+    // rangeEnd.setDate(rangeEnd.getDate() + (7 - rangeEnd.getDay()));
+  }
+
+  // Number of weeks for iteration
+  var weeks = (rangeEnd.getTime() - rangeStart.getTime()) / 604800000 + 1;
+
+  var query_days = [];
+  query_days[0] = new Date(rangeStart);
+  for (let i = 1; i < weeks; i++) {
+    var day = new Date(rangeStart);
+    day.setDate(day.getDate() + 7 * i);
+    query_days[i] = day;
+  }
+
   var requestData = {
     versionInfo: {
       moduleVersion: "",
@@ -27,8 +63,115 @@ export async function getTimetable() {
       },
     },
   };
-  var calendarData = await(await interact("timetable", "week", requestData)).json();
-  console.log(JSON.stringify(calendarData))
 
-  
+  var data = [];
+
+  for (let i = 0; i < query_days.length; i++) {
+    requestData.screenData.variables.SelectedDate = query_days[i]
+      .toISOString()
+      .split("T")[0];
+    var calendarData = await (
+      await interact("timetable", "week", requestData)
+    ).json();
+    data[i] = calendarData;
+  }
+
+  return data;
+}
+
+async function toICS(data) {
+  // console.log(JSON.stringify(data));
+
+  const template = `
+  BEGIN:VEVENT
+  DTSTART:20260120T100000Z
+  DTEND:20260120T110000Z
+  DTSTAMP:20260114T140000Z
+  UID:event1-uid@example.com
+  SUMMARY:
+  DESCRIPTION:Discuss Q1 goals.
+  LOCATION:Conference Room A
+  END:VEVENT
+  `;
+
+  var result = "BEGIN:VCALENDAR";
+
+  var r0 = Number(range[0].replaceAll("-", ""));
+  var r1 = Number(range[1].replaceAll("-", ""));
+
+  console.log(r0, r1);
+
+  loop: for (let i = 0; i < data.length; i++) {
+    var currentData = data[i].data.WeekItems.List;
+
+    for (let j = 0; j < currentData.length; j++) {
+      var dayData = currentData[j].TimeTableBlockDisplayList.List;
+
+      for (let k = 0; k < dayData.length; k++) {
+        var finalData = dayData[k];
+
+        var date_start = Date.parse(`${finalData.Date} ${finalData.TimeStart}`);
+        var date_end = Date.parse(`${finalData.Date} ${finalData.TimeEnd}`);
+
+        if (
+          Number(
+            new Date(date_start)
+              .toISOString()
+              .match(/(.*?)T/)[1]
+              .replaceAll("-", "")
+          ) > r1
+        ) {
+          break loop;
+        }
+
+        if (
+          Number(
+            new Date(date_start)
+              .toISOString()
+              .match(/(.*?)T/)[1]
+              .replaceAll("-", "")
+          ) < r0
+        ) {
+          continue;
+        }
+
+        var start = new Date(date_start)
+          .toISOString()
+          .replace(/\.[0-9]*/, "")
+          .replaceAll(/\:|\-|\./g, "");
+        var end = new Date(date_end)
+          .toISOString()
+          .replace(/\.[0-9]*/, "")
+          .replaceAll(/\:|\-|\./g, "");
+        var stamp = new Date(Date.now())
+          .toISOString()
+          .replaceAll(/\:|\-|\./g, "");
+        // var uid = `${(finalData.Description).replaceAll(/\s/g, "")}-${finalData.Date}:${finalData.TimeStart}@sim.edu.sg`
+        var uid = `${finalData.ClassInformation.SlotId}@sim.edu.sg`.replaceAll(":", "");
+        var title = finalData.Class;
+        var location = finalData.Venue;
+
+        // console.log(start, end, uid, title, location);
+
+        result = `
+${result}
+BEGIN:VEVENT
+DTSTART:${start}
+DTEND:${end}
+DTSTAMP:${stamp}
+UID:${uid}
+SUMMARY:${title}
+LOCATION:${location}
+END:VEVENT`;
+      }
+    }
+  }
+
+  result = `
+  ${result}
+END:VCALENDAR`;
+  result = result.trim();
+  console.log(result);
+
+  await write("./out.ics", result);
 }
