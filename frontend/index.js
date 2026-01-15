@@ -58,7 +58,21 @@ window.serverlog.update((arg) => {
 
 const execute_e = document.getElementById("execute");
 execute_e.addEventListener("click", () => {
-  window.action.run();
+  var date1 = document.getElementById("date1").value
+  var date2 = document.getElementById("date2").value
+
+  var date1_n = Date.parse(date1);
+  var date2_n = Date.parse(date2);
+
+  var status = document.getElementById("date_s");
+
+  if (date1_n > date2_n || isNaN(date1_n) || isNaN(date2_n)) {
+    status.innerText = "Invalid range!";
+    status.className = "status red";
+    return;
+  } else {
+    status.className = "status hide"
+  }
+  console.log(date1, date2)
+    window.action.run(date1, date2);
 });
-
-

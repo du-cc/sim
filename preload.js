@@ -11,5 +11,5 @@ contextBridge.exposeInMainWorld("serverlog", {
 })
 
 contextBridge.exposeInMainWorld("action", {
-  run: () => ipcRenderer.invoke("run")
+  run: (...args) => ipcRenderer.invoke("run", ...args)
 })

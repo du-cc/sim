@@ -99,7 +99,6 @@ export function parseCookies(header) {
 }
 
 export async function store(action, v, data, e = null, secret = true) {
-  log("misc.mjs", "hi", "d", "wwf")
   var end = e == null ? "txt" : e;
 
   const subFolder = secret ? "data" : ".";
