@@ -6,7 +6,7 @@ import * as files from "files";
 import { sendToClient } from "../main.js";
 
 // debug mode will show all variable values while running
-const DEBUG = true;
+const DEBUG = false;
 
 // ignore this spaghetti function
 // I added the body last and lazy to modify all other existing function calls
@@ -59,6 +59,10 @@ export async function request(
 }
 
 export function log(script, module, action, data, type) {
+  if (!DEBUG && action.toUpperCase() === "EXTRACT") {
+    return;
+  }
+
   sendToClient("log", [script, module, action, data, type]);
 
   if (type == "error") {
@@ -78,9 +82,6 @@ export function log(script, module, action, data, type) {
       "\x1b[32m%s\x1b[0m",
       `[${script}][${module}] ${action} - ${data}`
     );
-  }
-  if (DEBUG == false && action == "EXTRACT") {
-    return;
   }
   return console.log(`[${script}][${module}] ${action} - ${data}`);
 }

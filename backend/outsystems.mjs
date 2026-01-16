@@ -19,6 +19,8 @@ var nr_cookies = await store("get", "nr_cookies");
 
 async function getVersion(module, endpoint) {
   // var moduleInfo_req = await request("get", `https://simattendance.simge.edu.sg/StudentApp/moduleservices/moduleinfo?${moduleVersion}`)
+  log("outsystems.mjs", "INFO", "FUNC", "getVersion", "info");
+  log("outsystems.mjs", "INFO", "STATUS", "Getting version info", "info");
 
   var map = JSON.parse(await store("get", "map", null, "json", false));
 
@@ -41,15 +43,28 @@ async function getVersion(module, endpoint) {
     ) & process.exit();
   }
 
+  log("outsystems.mjs", "getVersion", "FETCH", "apiVersion, moduleVersion");
+
   var apiVersion = map[module].apiVersion[endpoint];
   var moduleVersion = map.moduleVersion;
 
+  log("outsystems.mjs", "getVersion", "EXTRACT", `apiVersion: ${apiVersion}`);
+  log(
+    "outsystems.mjs",
+    "getVersion",
+    "EXTRACT",
+    `moduleVersion: ${moduleVersion}`
+  );
+
+  log("outsystems.mjs", "INFO", "STATUS", "Validating version info", "info");
   var validation_body =
     "universal" in map[module].mockData
       ? map[module].mockData.universal
       : map[module].mockData[endpoint];
   validation_body.versionInfo.moduleVersion = moduleVersion;
   validation_body.versionInfo.apiVersion = apiVersion;
+
+  log("outsystems.mjs", "getVersion", "FETCH", "validation");
 
   // one line cuz i feel like it
   // flow:
@@ -72,14 +87,33 @@ async function getVersion(module, endpoint) {
   var apiValidation = validation.hasApiVersionChanged;
   var moduleValidation = validation.hasModuleVersionChanged;
 
-  console.log(apiValidation, moduleValidation);
+  log(
+    "outsystems.mjs",
+    "getVersion",
+    "EXTRACT",
+    `apiValidation: ${apiValidation}`
+  );
+  log(
+    "outsystems.mjs",
+    "getVersion",
+    "EXTRACT",
+    `moduleValidation: ${moduleValidation}`
+  );
 
   if (apiValidation) {
+    log(
+      "outsystems.mjs",
+      "INFO",
+      "STATUS",
+      "apiVersion changed. Fetching a new one.",
+      "info"
+    );
     // flow of oneline:
     // var latestApiVersion = await request("get", `https://simattendance.simge.edu.sg/StudentApp/scripts/${map[module].script}`)
     // latestApiVersion = await latestApiVersion.text()
     // var regex = new RegExp(`["'](${map[module].path.replace("/", "/")}${map[module].endpoints[endpoint]})["']\\s*,\\s*["']([a-zA-Z0-9\\-_]{22})["']`)
     // latestApiVersion = latestApiVersion.match(regex)[2]
+    log("outsystems.mjs", "getVersion", "FETCH", "latestApiVersion");
     var latestApiVersion = (
       await (
         await request(
@@ -95,11 +129,28 @@ async function getVersion(module, endpoint) {
       )
     )[2];
 
+    log(
+      "outsystems.mjs",
+      "getVersion",
+      "EXTRACT",
+      `latestApiVersion: ${latestApiVersion}`
+    );
+
     map[module].apiVersion[endpoint] = latestApiVersion;
     await store("write", "map", JSON.stringify(map, null, 2), "json", false);
   }
 
   if (moduleValidation) {
+    log(
+      "outsystems.mjs",
+      "INFO",
+      "STATUS",
+      "moduleVersion changed. Fetching a new one.",
+      "info"
+    );
+
+    log("outsystems.mjs", "getVersion", "FETCH", "latestModuleVersion");
+
     var latestModuleVersion = (
       await (
         await request(
@@ -109,10 +160,18 @@ async function getVersion(module, endpoint) {
       ).json()
     ).versionToken;
 
+    log(
+      "outsystems.mjs",
+      "getVersion",
+      "EXTRACT",
+      `latestModuleVersion: ${latestModuleVersion}`
+    );
+
     map.moduleVersion = latestModuleVersion;
     await store("write", "map", JSON.stringify(map, null, 2), "json", false);
   }
 
+  log("outsystems.mjs", "INFO", "STATUS", "versionInfo is valid!", "success");
   return {
     apiVersion: map[module].apiVersion[endpoint],
     moduleVersion: map.moduleVersion,
@@ -126,7 +185,7 @@ async function authenticate(cookie) {
   var simCookies = SAML_simCookies[1];
   // logging in to SIM, formally
   // "We are in."
-  log("outsystems.mjs", "SIM-Auth", "STATUS", "Logging in into SIM...", "info");
+  log("outsystems.mjs", "SIM-Auth", "STATUS", "Logging in into SIM", "info");
   log("outsystems.mjs", "SIM-Auth", "FETCH", "token");
   var token_req = await request(
     "post",
@@ -154,7 +213,7 @@ async function authenticate(cookie) {
     console.log("outsystems.mjs", "ASS");
     process.exit();
   }
-  log("outsystems.mjs", "SIM-Auth", "STATUS", "Logged in!", "success");
+  log("outsystems.mjs", "INFO", "STATUS", "Log in success!", "success");
 
   var token = token_text.match(
     /MobileCloseInAppPoint\.aspx\?token\=(.*?)\"/
@@ -212,25 +271,51 @@ async function authenticate(cookie) {
 }
 
 export async function interact(module, endpoint, data) {
+  log("outsystems.mjs", "INFO", "FUNC", "interact", "info");
+
   if (
     nr_expire == null ||
     nr_expire < Date.now() ||
     nr_cookies == null ||
     CSRF == null
   ) {
+    log(
+      "outsystems.mjs",
+      "INFO",
+      "STATUS",
+      "Cookie/CSRF is missing/expired, fetching a new one"
+    );
+    log("outsystems.mjs", "interact", "FETCH", "latestCookie, CSRF");
     CSRF = "T6C+9iB49TLra4jEsMeSckDMNhQ=";
     var authData = await authenticate(MICROSOFT_LOGIN_COOKIE);
-    var latestCookie = authData[0]
-    CSRF = authData[1]
+    var latestCookie = authData[0];
+    CSRF = authData[1];
+
+    log(
+      "outsystems.mjs",
+      "interact",
+      "EXTRACT",
+      `latestCookie: ${latestCookie}`
+    );
+    log("outsystems.mjs", "interact", "EXTRACT", `CSRF: ${CSRF}`);
+
     store("write", "nr_cookies", latestCookie);
     store("write", "csrf", CSRF);
 
     nr_cookies = latestCookie;
   }
 
+  log("outsystems.mjs", "interact", "FETCH", "apiVersion, moduleVersion");
   var api_module_version = await getVersion(module, endpoint);
   var apiVersion = api_module_version.apiVersion;
   var moduleVersion = api_module_version.moduleVersion;
+  log("outsystems.mjs", "interact", "EXTRACT", `apiVersion: ${apiVersion}`);
+  log(
+    "outsystems.mjs",
+    "interact",
+    "EXTRACT",
+    `moduleVersion: ${moduleVersion}`
+  );
 
   var map = await store("get", "map", null, "json", false);
   map = JSON.parse(map);
@@ -238,8 +323,14 @@ export async function interact(module, endpoint, data) {
   data.versionInfo.apiVersion = apiVersion;
   data.versionInfo.moduleVersion = moduleVersion;
 
-  console.log(JSON.stringify(data));
+  log(
+    "outsystems.mjs",
+    "interact",
+    "EXTRACT",
+    `data: ${JSON.stringify(data)}`
+  );
 
+  log("outsystems.mjs", "INFO", "STATUS", `Sending interaction request - Module: ${module}, Endpoint: ${endpoint}`)
   return await request(
     map[module].method,
     `https://simattendance.simge.edu.sg/StudentApp/${map[module].path}${map[module].endpoints[endpoint]}`,

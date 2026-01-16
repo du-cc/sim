@@ -33,7 +33,7 @@ const log_container_e = document.getElementById("log");
 
 function log(script, module, action, data, type) {
   var text = `[${script}][${module}] ${action} - ${data}`;
-  var color = "#fff";
+  var color;
 
   if (type == "error") {
     color = "color-mix(in srgb, red 70%, var(--fg) 30%)";
@@ -47,9 +47,10 @@ function log(script, module, action, data, type) {
 
   var text_e = document.createElement("span");
   text_e.innerText = text;
-  text_e.style.color = color;
+  text_e.style.color = color == "" ? "var(--fg)" : color;
 
   log_container_e.appendChild(text_e);
+  log_container_e.scrollTop = log_container_e.scrollHeight;
 }
 
 window.serverlog.update((arg) => {
@@ -85,3 +86,28 @@ for (let i = 0; i < execute_e.length; i++) {
     }
   });
 }
+
+var theme_switch_e = document.getElementById("theme_switch");
+var theme_switch_icon_e = document.querySelector("#theme_switch > i");
+var THEME_DARK = true;
+
+theme_switch_e.addEventListener("click", function (e) {
+  var root = document.documentElement;
+
+  if (THEME_DARK === true) {
+    root.style.setProperty("--bg", "#d4d4d4");
+    root.style.setProperty("--fg", "#020202");
+    root.style.setProperty("--date-picker-filter", "0%");
+    theme_switch_icon_e.className = "fa-solid fa-moon";
+
+    THEME_DARK = false;
+  } else {
+    // This only runs if THEME_DARK was NOT true
+    root.style.setProperty("--bg", "#020202");
+    root.style.setProperty("--fg", "#d4d4d4");
+    root.style.setProperty("--date-picker-filter", "100%");
+    theme_switch_icon_e.className = "fa-solid fa-sun-bright";
+
+    THEME_DARK = true;
+  }
+});

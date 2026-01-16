@@ -3,6 +3,7 @@ import { interact } from "./outsystems.mjs";
 import { exec } from "child_process";
 import path from "path";
 import { fileURLToPath } from "url";
+import { log } from "./misc.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,8 +14,16 @@ var mode;
 export async function getTimetable(d1, d2, m) {
   range = [d1, d2];
   mode = m;
-
+  log("flow.mjs", "INFO", "STATUS", "Fetching timetable", "info");
   var timetableData = await requestTimetable();
+
+  log(
+    "flow.mjs",
+    "INFO",
+    "STATUS",
+    "Converting timetable to calendar data",
+    "info"
+  );
   var icsData = await toICS(timetableData);
 
   if (mode == "merged") {
@@ -25,8 +34,8 @@ export async function getTimetable(d1, d2, m) {
     var data = icsData[1];
 
     for (const [key, value] of Object.entries(data)) {
-          var result = "BEGIN:VCALENDAR";
-
+      var result = "BEGIN:VCALENDAR";
+      // loop through dict per module
       for (let i = 0; i < value.length; i++) {
         var v = value[i];
         result += `
@@ -42,12 +51,14 @@ END:VEVENT`;
 
       result += "\nEND:VCALENDAR";
       result = result.trim();
-      console.log(key)
       write(`./out_multi/${key}.ics`, result);
     }
     var filePath = path.resolve(__dirname, "../out_multi", "out.ics");
   }
 
+  log("flow.mjs", "INFO", "SUCCESS", "All done!", "success");
+
+  // open in file manager
   const platform = process.platform;
 
   if (platform === "win32") {
@@ -61,25 +72,42 @@ END:VEVENT`;
 }
 
 async function requestTimetable() {
+  log("flow.mjs", "INFO", "STATUS", "Requesting timetable data", "info");
+
   var rangeStart = new Date(range[0]);
   var rangeEnd = new Date(range[1]);
 
   var rangeStart_day = rangeStart.getDay();
   var rangeEnd_day = rangeEnd.getDay();
 
+  // make the range the whole week
+  // requests only can start in Sundays
   if (rangeStart_day !== 0) {
     rangeStart.setDate(rangeStart.getDate() - rangeStart_day);
   }
 
   if (rangeEnd_day !== 0) {
     rangeEnd.setDate(rangeEnd.getDate() - rangeEnd_day);
-
-    // rangeEnd.setDate(rangeEnd.getDate() + (7 - rangeEnd.getDay()));
   }
+
+  log(
+    "flow.mjs",
+    "requestTimetable",
+    "EXTRACT",
+    `rangeStart: ${rangeStart}, rangeEnd: ${rangeEnd}, rangeStart_day: ${rangeStart_day}, rangeEnd_day: ${rangeEnd_day}`
+  );
 
   // Number of weeks for iteration
   var weeks = (rangeEnd.getTime() - rangeStart.getTime()) / 604800000 + 1;
+  log(
+    "flow.mjs",
+    "INFO",
+    "STATUS",
+    `Requesting ${weeks} weeks of calendar data`,
+    "info"
+  );
 
+  // List of dates (Sunday) to query the week
   var query_days = [];
   query_days[0] = new Date(rangeStart);
   for (let i = 1; i < weeks; i++) {
@@ -117,7 +145,15 @@ async function requestTimetable() {
 
   var data = [];
 
+  // Interact with SIM API
   for (let i = 0; i < query_days.length; i++) {
+    log(
+      "flow.mjs",
+      "INFO",
+      "STATUS",
+      `Requesting timetable data of week ${i + 1}`,
+      "info"
+    );
     requestData.screenData.variables.SelectedDate = query_days[i]
       .toISOString()
       .split("T")[0];
@@ -131,27 +167,16 @@ async function requestTimetable() {
 }
 
 async function toICS(data) {
-  // console.log(JSON.stringify(data));
-
-  const template = `
-  BEGIN:VEVENT
-  DTSTART:20260120T100000Z
-  DTEND:20260120T110000Z
-  DTSTAMP:20260114T140000Z
-  UID:event1-uid@example.com
-  SUMMARY:
-  DESCRIPTION:Discuss Q1 goals.
-  LOCATION:Conference Room A
-  END:VEVENT
-  `;
-
   var result = "BEGIN:VCALENDAR";
 
+  // prep for calculable format
+  // eg: 20260101
   var r0 = Number(range[0].replaceAll("-", ""));
   var r1 = Number(range[1].replaceAll("-", ""));
 
   var split_dict = {};
 
+  // Loop through the timetable data to pull datas
   loop: for (let i = 0; i < data.length; i++) {
     var currentData = data[i].data.WeekItems.List;
 
@@ -164,7 +189,9 @@ async function toICS(data) {
         var date_start = Date.parse(`${finalData.Date} ${finalData.TimeStart}`);
         var date_end = Date.parse(`${finalData.Date} ${finalData.TimeEnd}`);
 
+        // check if entry exceeded range
         if (
+          // eg: 20260101
           Number(
             new Date(date_start)
               .toISOString()
@@ -175,6 +202,7 @@ async function toICS(data) {
           break loop;
         }
 
+        // check if entry haven't reach the range
         if (
           Number(
             new Date(date_start)
@@ -186,10 +214,13 @@ async function toICS(data) {
           continue;
         }
 
+        // ISO format and accordance to rfc2445 specs
+        // see: https://www.ietf.org/rfc/rfc2445.txt
+        // eg: 20260116T070000Z
         var start = new Date(date_start)
           .toISOString()
-          .replace(/\.[0-9]*/, "")
-          .replaceAll(/\:|\-|\./g, "");
+          .replace(/\.[0-9]*/, "") // remove ms from ISO format
+          .replaceAll(/\:|\-|\./g, ""); // remove symbol: -, :, .
         var end = new Date(date_end)
           .toISOString()
           .replace(/\.[0-9]*/, "")
@@ -198,6 +229,7 @@ async function toICS(data) {
           .toISOString()
           .replaceAll(/\:|\-|\./g, "");
         // var uid = `${(finalData.Description).replaceAll(/\s/g, "")}-${finalData.Date}:${finalData.TimeStart}@sim.edu.sg`
+        // ":" is stripped for better compatibility to calendar apps
         var uid = `${finalData.ClassInformation.SlotId}@sim.edu.sg`.replaceAll(
           ":",
           ""
@@ -205,8 +237,7 @@ async function toICS(data) {
         var title = finalData.Class;
         var location = finalData.Venue;
 
-        // console.log(start, end, uid, title, location);
-
+        // split mode: map datas by modules
         if (mode == "split") {
           if (!split_dict[title]) {
             split_dict[title] = [];
@@ -241,6 +272,5 @@ END:VEVENT`;
 END:VCALENDAR`;
   result = result.trim();
 
-  console.log(split_dict);
   return [result, split_dict];
 }
