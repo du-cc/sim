@@ -38,8 +38,10 @@
           </div>
           <div class="input">
             <span class="label">Range</span>
-            <div style="gap: 1em;">
-              <input type="date" id="date1" /><span style="align-self: center;">to</span>
+            <div style="gap: 1em">
+              <input type="date" id="date1" /><span style="align-self: center"
+                >to</span
+              >
               <input type="date" id="date2" />
             </div>
             <span class="status hide" id="date_s">Invalid range!</span>
@@ -200,9 +202,14 @@
             </details>
           </div>
         </div>
-        <button class="download-btn" id="execute">
-          <i class="fa-solid fa-calendar-arrow-down"></i> Download!
-        </button>
+        <div class="download-container">
+          <button class="download-btn" id="execute_merged">
+            <i class="fa-solid fa-merge"></i> Merged Download
+          </button>
+          <button class="download-btn" id="execute_split">
+            <i class="fa-solid fa-split"></i> Split Download (per class)
+          </button>
+        </div>
       </div>
       <div class="container">
         <span class="label">Log</span>

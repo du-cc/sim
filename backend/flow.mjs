@@ -1,12 +1,65 @@
 import { write } from "files";
 import { interact } from "./outsystems.mjs";
+import { exec } from "child_process";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 var range = [];
+var mode;
 
-export async function getTimetable(d1, d2) {
+export async function getTimetable(d1, d2, m) {
   range = [d1, d2];
+  mode = m;
+
   var timetableData = await requestTimetable();
-  var icsData = toICS(timetableData);
+  var icsData = await toICS(timetableData);
+
+  if (mode == "merged") {
+    await write("./out.ics", icsData[0]);
+    var filePath = path.resolve(__dirname, "..", "out.ics");
+  }
+  if (mode == "split") {
+    var data = icsData[1];
+    var result = "BEGIN:VCALENDAR";
+
+    for (var [key, value] of Object.entries(data)) {
+      for (let i = 0; i < value.length; i++) {
+        value = value[i];
+        result = `
+${result}
+BEGIN:VEVENT
+DTSTART:${value.start}
+DTEND:${value.end}
+DTSTAMP:${value.stamp}
+UID:${value.uid}
+SUMMARY:${value.title}
+LOCATION:${value.location}
+END:VEVENT`;
+      }
+
+      result = `
+${result}
+END:VCALENDAR`;
+      result = result.trim();
+
+      write(`./out_multi/${key}.ics`, result);
+    }
+    var filePath = path.resolve(__dirname, "../out_multi", "out.ics");
+  }
+
+  const platform = process.platform;
+
+  if (platform === "win32") {
+    exec(`explorer.exe /select,"${filePath}"`);
+  } else if (platform === "darwin") {
+    exec(`open -R "${filePath}"`);
+  } else {
+    const parentDir = path.dirname(filePath);
+    exec(`xdg-open "${parentDir}"`);
+  }
 }
 
 async function requestTimetable() {
@@ -99,7 +152,7 @@ async function toICS(data) {
   var r0 = Number(range[0].replaceAll("-", ""));
   var r1 = Number(range[1].replaceAll("-", ""));
 
-  console.log(r0, r1);
+  var split_dict = {};
 
   loop: for (let i = 0; i < data.length; i++) {
     var currentData = data[i].data.WeekItems.List;
@@ -147,11 +200,29 @@ async function toICS(data) {
           .toISOString()
           .replaceAll(/\:|\-|\./g, "");
         // var uid = `${(finalData.Description).replaceAll(/\s/g, "")}-${finalData.Date}:${finalData.TimeStart}@sim.edu.sg`
-        var uid = `${finalData.ClassInformation.SlotId}@sim.edu.sg`.replaceAll(":", "");
+        var uid = `${finalData.ClassInformation.SlotId}@sim.edu.sg`.replaceAll(
+          ":",
+          ""
+        );
         var title = finalData.Class;
         var location = finalData.Venue;
 
         // console.log(start, end, uid, title, location);
+
+        if (mode == "split") {
+          if (!split_dict[title]) {
+            split_dict[title] = [];
+          }
+
+          split_dict[title].push({
+            start,
+            end,
+            stamp,
+            uid,
+            title,
+            location,
+          });
+        }
 
         result = `
 ${result}
@@ -171,7 +242,8 @@ END:VEVENT`;
   ${result}
 END:VCALENDAR`;
   result = result.trim();
-  console.log(result);
+  // console.log(result);
 
-  await write("./out.ics", result);
+  console.log(split_dict);
+  return [result, split_dict];
 }
