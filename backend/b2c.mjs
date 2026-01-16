@@ -83,9 +83,9 @@ export async function authenticate(MICROSOFT_LOGIN_COOKIE) {
   // code and session
   log(
     "b2c.mjs",
-    "MS-Auth",
+    "INFO",
     "STATUS",
-    "Authenticating with Microsoft...",
+    "Authenticating with Microsoft",
     "info"
   );
   log("b2c.mjs", "MS-Auth", "FETCH", "code, session");
@@ -105,7 +105,7 @@ export async function authenticate(MICROSOFT_LOGIN_COOKIE) {
     process.exit();
   }
 
-  log("b2c.mjs", "MS-Auth", "STATUS", "Authenticated!", "success");
+  log("b2c.mjs", "INFO", "STATUS", "Authenticated!", "success");
 
   // extract from auth response form thingy
   var code = auth_text.match(/name="code"\s+value="(.*?)"/)[1];
