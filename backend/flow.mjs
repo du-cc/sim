@@ -23,28 +23,26 @@ export async function getTimetable(d1, d2, m) {
   }
   if (mode == "split") {
     var data = icsData[1];
-    var result = "BEGIN:VCALENDAR";
 
-    for (var [key, value] of Object.entries(data)) {
+    for (const [key, value] of Object.entries(data)) {
+          var result = "BEGIN:VCALENDAR";
+
       for (let i = 0; i < value.length; i++) {
-        value = value[i];
-        result = `
-${result}
+        var v = value[i];
+        result += `
 BEGIN:VEVENT
-DTSTART:${value.start}
-DTEND:${value.end}
-DTSTAMP:${value.stamp}
-UID:${value.uid}
-SUMMARY:${value.title}
-LOCATION:${value.location}
+DTSTART:${v.start}
+DTEND:${v.end}
+DTSTAMP:${v.stamp}
+UID:${v.uid}
+SUMMARY:${v.title}
+LOCATION:${v.location}
 END:VEVENT`;
       }
 
-      result = `
-${result}
-END:VCALENDAR`;
+      result += "\nEND:VCALENDAR";
       result = result.trim();
-
+      console.log(key)
       write(`./out_multi/${key}.ics`, result);
     }
     var filePath = path.resolve(__dirname, "../out_multi", "out.ics");
@@ -242,7 +240,7 @@ END:VEVENT`;
   ${result}
 END:VCALENDAR`;
   result = result.trim();
-  
+
   console.log(split_dict);
   return [result, split_dict];
 }
