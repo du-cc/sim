@@ -22,7 +22,9 @@
   },
   "homepage": "https://github.com/du-cc/sim#readme",
   "dependencies": {
-    "files": "^3.0.2"
+    "child_process": "^1.0.2",
+    "files": "^3.0.2",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "electron": "^39.2.7"

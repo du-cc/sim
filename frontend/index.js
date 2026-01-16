@@ -56,23 +56,32 @@ window.serverlog.update((arg) => {
   log(arg[0], arg[1], arg[2], arg[3], arg[4]);
 });
 
-const execute_e = document.getElementById("execute");
-execute_e.addEventListener("click", () => {
-  var date1 = document.getElementById("date1").value
-  var date2 = document.getElementById("date2").value
+const execute_e = document.getElementsByClassName("download-btn");
 
-  var date1_n = Date.parse(date1);
-  var date2_n = Date.parse(date2);
+for (let i = 0; i < execute_e.length; i++) {
+  const element = execute_e[i];
 
-  var status = document.getElementById("date_s");
+  element.addEventListener("click", function (e) {
+    var date1 = document.getElementById("date1").value;
+    var date2 = document.getElementById("date2").value;
+    var date1_n = Date.parse(date1);
+    var date2_n = Date.parse(date2);
 
-  if (date1_n > date2_n || isNaN(date1_n) || isNaN(date2_n)) {
-    status.innerText = "Invalid range!";
-    status.className = "status red";
-    return;
-  } else {
-    status.className = "status hide"
-  }
-  console.log(date1, date2)
-    window.action.run(date1, date2);
-});
+    var status = document.getElementById("date_s");
+
+    if (date1_n > date2_n || isNaN(date1_n) || isNaN(date2_n)) {
+      status.innerText = "Invalid range!";
+      status.className = "status red";
+      return;
+    } else {
+      status.className = "status hide";
+    }
+
+    if (this.id == "execute_merged") {
+      window.action.run(date1, date2, "merged");
+    }
+    if (this.id == "execute_split") {
+      window.action.run(date1, date2, "split");
+    }
+  });
+}

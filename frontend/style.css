@@ -71,6 +71,7 @@ body {
   border: 1px solid color-mix(in srgb, var(--fg) 10%, transparent 90%);
   cursor: pointer;
   transition-duration: 0.3s;
+  flex: 1;
 }
 
 .download-btn:hover,
@@ -94,7 +95,8 @@ body {
   border-radius: 0.3em;
   height: 80dvh;
   overflow-y: auto;
-  scrollbar-color: color-mix(in srgb, var(--fg) 10%, transparent 90%) transparent;
+  scrollbar-color: color-mix(in srgb, var(--fg) 10%, transparent 90%)
+    transparent;
   scrollbar-width: thin;
 }
 
@@ -158,13 +160,20 @@ body {
 :not(input):not(textarea),
 :not(input):not(textarea)::after,
 :not(input):not(textarea)::before {
-    -webkit-user-select: none;
-    user-select: none;
-    cursor: default;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: default;
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(100%);
+  filter: invert(100%);
+}
+
+.download-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  gap: 1.3em;
 }
 
 /* I KNOW THIS WON'T GET RUN AT A MOBILE PHONE
