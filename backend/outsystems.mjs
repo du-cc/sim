@@ -200,27 +200,32 @@ async function authenticate(cookie) {
   await store("write", "nr_expire", nr_expire);
 
   // extract csrf via nr2, pretty hidey huh :)
-  CSRF = decodeURIComponent(nr_cookies[1]).match(/crf\=(.*?)\;/)[1];
-  log("outsystems.mjs", "SIM-Auth", "EXTRACT", `CSRF: ${CSRF}`);
-  await store("write", "csrf", CSRF);
+  var sCSRF = decodeURIComponent(nr_cookies[1]).match(/crf\=(.*?)\;/)[1];
+  log("outsystems.mjs", "SIM-Auth", "EXTRACT", `CSRF: ${sCSRF}`);
+  await store("write", "csrf", sCSRF);
 
   // then parse cookies
   var nr_cookies = parseCookies(nr_cookies);
   log("outsystems.mjs", "SIM-Auth", "EXTRACT", `nr_cookies: ${nr_cookies}`);
 
-  return nr_cookies;
+  return [nr_cookies, sCSRF];
 }
 
 export async function interact(module, endpoint, data) {
-  if (CSRF == null) {
-    var latestCookie = await authenticate(MICROSOFT_LOGIN_COOKIE);
-    store("write", "csrf", CSRF);
-  }
-
-  if (nr_expire == null || nr_expire < Date.now() || nr_cookies == null) {
+  if (
+    nr_expire == null ||
+    nr_expire < Date.now() ||
+    nr_cookies == null ||
+    CSRF == null
+  ) {
     CSRF = "T6C+9iB49TLra4jEsMeSckDMNhQ=";
-    var latestCookie = await authenticate(MICROSOFT_LOGIN_COOKIE);
+    var authData = await authenticate(MICROSOFT_LOGIN_COOKIE);
+    var latestCookie = authData[0]
+    CSRF = authData[1]
     store("write", "nr_cookies", latestCookie);
+    store("write", "csrf", CSRF);
+
+    nr_cookies = latestCookie;
   }
 
   var api_module_version = await getVersion(module, endpoint);
@@ -228,12 +233,12 @@ export async function interact(module, endpoint, data) {
   var moduleVersion = api_module_version.moduleVersion;
 
   var map = await store("get", "map", null, "json", false);
-  map = JSON.parse(map)
+  map = JSON.parse(map);
 
   data.versionInfo.apiVersion = apiVersion;
   data.versionInfo.moduleVersion = moduleVersion;
 
-  console.log(JSON.stringify(data))
+  console.log(JSON.stringify(data));
 
   return await request(
     map[module].method,

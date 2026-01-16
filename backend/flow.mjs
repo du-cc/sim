@@ -242,8 +242,7 @@ END:VEVENT`;
   ${result}
 END:VCALENDAR`;
   result = result.trim();
-  // console.log(result);
-
+  
   console.log(split_dict);
   return [result, split_dict];
 }
