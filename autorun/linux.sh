@@ -16,7 +16,6 @@ if [ ! -f "$FLAG_FILE" ]; then
     echo "Installing nvm and Node..."
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
     
-    # Load nvm into the current shell session
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     
