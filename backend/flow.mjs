@@ -231,7 +231,7 @@ async function toICS(data) {
         // var uid = `${(finalData.Description).replaceAll(/\s/g, "")}-${finalData.Date}:${finalData.TimeStart}@sim.edu.sg`
         // ":" is stripped for better compatibility to calendar apps
         var uid = `${finalData.ClassInformation.SlotId}@sim.edu.sg`.replaceAll(
-          ":",
+          /\:|\-/g,
           ""
         );
         var title = finalData.Class;
