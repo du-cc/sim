@@ -22,8 +22,9 @@ export async function getTimetable(d1, d2, m) {
     "INFO",
     "STATUS",
     "Converting timetable to calendar data",
-    "info"
+    "info",
   );
+  console.log(JSON.stringify(timetableData));
   var icsData = await toICS(timetableData);
 
   if (mode == "merged") {
@@ -94,7 +95,7 @@ async function requestTimetable() {
     "flow.mjs",
     "requestTimetable",
     "EXTRACT",
-    `rangeStart: ${rangeStart}, rangeEnd: ${rangeEnd}, rangeStart_day: ${rangeStart_day}, rangeEnd_day: ${rangeEnd_day}`
+    `rangeStart: ${rangeStart}, rangeEnd: ${rangeEnd}, rangeStart_day: ${rangeStart_day}, rangeEnd_day: ${rangeEnd_day}`,
   );
 
   // Number of weeks for iteration
@@ -104,7 +105,7 @@ async function requestTimetable() {
     "INFO",
     "STATUS",
     `Requesting ${weeks} weeks of calendar data`,
-    "info"
+    "info",
   );
 
   // List of dates (Sunday) to query the week
@@ -152,7 +153,7 @@ async function requestTimetable() {
       "INFO",
       "STATUS",
       `Requesting timetable data of week ${i + 1}`,
-      "info"
+      "info",
     );
     requestData.screenData.variables.SelectedDate = query_days[i]
       .toISOString()
@@ -167,7 +168,21 @@ async function requestTimetable() {
 }
 
 async function toICS(data) {
-  var result = "BEGIN:VCALENDAR";
+  var result = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//SIM//Class Schedule//EN
+CALSCALE:GREGORIAN
+BEGIN:VTIMEZONE
+TZID:Asia/Singapore
+LAST-MODIFIED:20230810T000000Z
+BEGIN:STANDARD
+TZNAME:SGT
+TZOFFSETFROM:+0800
+TZOFFSETTO:+0800
+DTSTART:19700101T000000
+END:STANDARD
+END:VTIMEZONE
+`;
 
   // prep for calculable format
   // eg: 20260101
@@ -185,7 +200,9 @@ async function toICS(data) {
 
       for (let k = 0; k < dayData.length; k++) {
         var finalData = dayData[k];
-
+        if (finalData.Type == "Holiday") {
+          continue;
+        }
         var date_start = Date.parse(`${finalData.Date} ${finalData.TimeStart}`);
         var date_end = Date.parse(`${finalData.Date} ${finalData.TimeEnd}`);
 
@@ -196,7 +213,7 @@ async function toICS(data) {
             new Date(date_start)
               .toISOString()
               .match(/(.*?)T/)[1]
-              .replaceAll("-", "")
+              .replaceAll("-", ""),
           ) > r1
         ) {
           break loop;
@@ -208,7 +225,7 @@ async function toICS(data) {
             new Date(date_start)
               .toISOString()
               .match(/(.*?)T/)[1]
-              .replaceAll("-", "")
+              .replaceAll("-", ""),
           ) < r0
         ) {
           continue;
@@ -232,7 +249,7 @@ async function toICS(data) {
         // ":" is stripped for better compatibility to calendar apps
         var uid = `${finalData.ClassInformation.SlotId}@sim.edu.sg`.replaceAll(
           /\:|\-/g,
-          ""
+          "",
         );
         var title = finalData.Class;
         var location = finalData.Venue;

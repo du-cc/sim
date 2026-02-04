@@ -1,5 +1,5 @@
 {
-  "moduleVersion": "y__tZN3LinIZE4Doytz8aw",
+  "moduleVersion": "GNbwVyxPZLSEj_FNV1uHBw",
   "timetable": {
     "script": "StudentApp.Timetable.Timetable.mvc.js",
     "path": "screenservices/StudentApp/Timetable/Timetable/",
@@ -13,7 +13,7 @@
       "universal": {
         "versionInfo": {
           "moduleVersion": "y__tZN3LinIZE4Doytz8aw",
-          "apiVersion": "0"
+          "apiVersion": "C6dGy1emWArQArnOz67rmA"
         },
         "viewName": "Timetable.Timetable",
         "screenData": {
