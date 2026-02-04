@@ -181,8 +181,7 @@ TZOFFSETFROM:+0800
 TZOFFSETTO:+0800
 DTSTART:19700101T000000
 END:STANDARD
-END:VTIMEZONE
-`;
+END:VTIMEZONE`;
 
   // prep for calculable format
   // eg: 20260101
@@ -234,17 +233,24 @@ END:VTIMEZONE
         // ISO format and accordance to rfc2445 specs
         // see: https://www.ietf.org/rfc/rfc2445.txt
         // eg: 20260116T070000Z
-        var start = new Date(date_start)
-          .toISOString()
-          .replace(/\.[0-9]*/, "") // remove ms from ISO format
-          .replaceAll(/\:|\-|\./g, ""); // remove symbol: -, :, .
-        var end = new Date(date_end)
-          .toISOString()
-          .replace(/\.[0-9]*/, "")
-          .replaceAll(/\:|\-|\./g, "");
+        var start =
+          new Date(date_start)
+            .toISOString()
+            .split(".")[0]
+            .replace(/\.[0-9]*/, "") // remove ms from ISO format
+            .replaceAll(/\:|\-|\./g, "") + "Z"; // remove symbol: -, :, .
+        var end =
+          new Date(date_end)
+            .toISOString()
+            .split(".")[0]
+            .replace(/\.[0-9]*/, "")
+            .replaceAll(/\:|\-|\./g, "") + "Z";
+
         var stamp = new Date(Date.now())
           .toISOString()
-          .replaceAll(/\:|\-|\./g, "");
+          .split(".")[0]
+          .replaceAll(/\:|\-|\./g, "") + "Z";
+
         // var uid = `${(finalData.Description).replaceAll(/\s/g, "")}-${finalData.Date}:${finalData.TimeStart}@sim.edu.sg`
         // ":" is stripped for better compatibility to calendar apps
         var uid = `${finalData.ClassInformation.SlotId}@sim.edu.sg`.replaceAll(
