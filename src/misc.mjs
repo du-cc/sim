@@ -3,23 +3,11 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 import * as files from "files";
-import { sendToClient } from "../main.js";
-
-// debug mode will show all variable values while running
-const DEBUG = false;
 
 // ignore this spaghetti function
 // I added the body last and lazy to modify all other existing function calls
 // If it works, dont touch it --Random dev
-export async function request(
-  method,
-  url,
-  cookie,
-  redirect = true,
-  body,
-  bodyType,
-  csrf
-) {
+export async function request(method, url, args) {
   // var host = url.match(/https:\/\/(.*?)\//)[1];
   var response;
 
@@ -34,23 +22,29 @@ export async function request(
     "Sec-Fetch-Site": "same-site",
     "Sec-Fetch-User": "?1",
     Priority: "u=0, i",
-    "X-CSRFToken": csrf,
   };
 
-  if (cookie) {
-    headers["Cookie"] = cookie;
+  if (args && "csrf" in args) {
+    headers["X-CSRFToken"] = args["csrf"];
+  }
+
+  if (args && "cookie" in args) {
+    headers["Cookie"] = args["cookie"];
   }
 
   // Define base options
   const options = {
     method: method,
     headers: headers,
-    redirect: redirect === true ? "follow" : "manual",
   };
 
-  if (body) {
-    options.body = body;
-    headers["Content-Type"] = bodyType;
+  if (args && "redirect" in args) {
+    options["redirect"] = args["redirect"] === false ? "manual" : "follow";
+  }
+
+  if (args && "body" in args) {
+    options.body = args["body"];
+    headers["Content-Type"] = args["bodyType"];
   }
 
   response = await fetch(url, options);
@@ -58,32 +52,32 @@ export async function request(
   return response;
 }
 
-export function log(script, module, action, data, type) {
-  if (!DEBUG && action.toUpperCase() === "EXTRACT") {
-    return;
+export class log {
+  constructor(script) {
+    this.script = script;
   }
 
-  sendToClient("log", [script, module, action, data, type]);
-
-  if (type == "error") {
-    return console.error(
-      "\x1b[31m%s\x1b[0m",
-      `[${script}][${module}] ${action} - ${data}`
-    );
+  log(action, data) {
+    if (action.toUpperCase() == "ERROR") {
+      return console.error(
+        "\x1b[31m%s\x1b[0m",
+        `[${this.script}] ${action} - ${data}`,
+      );
+    }
+    if (action.toUpperCase() == "INFO") {
+      return console.log(
+        "\x1b[34m%s\x1b[0m",
+        `[${this.script}] ${action} - ${data}`,
+      );
+    }
+    if (action.toUpperCase() == "SUCCESS") {
+      return console.log(
+        "\x1b[32m%s\x1b[0m",
+        `[${this.script}] ${action} - ${data}`,
+      );
+    }
+    return console.log(`[${script}][${module}] ${action} - ${data}`);
   }
-  if (type == "info") {
-    return console.error(
-      "\x1b[34m%s\x1b[0m",
-      `[${script}][${module}] ${action} - ${data}`
-    );
-  }
-  if (type == "success") {
-    return console.error(
-      "\x1b[32m%s\x1b[0m",
-      `[${script}][${module}] ${action} - ${data}`
-    );
-  }
-  return console.log(`[${script}][${module}] ${action} - ${data}`);
 }
 
 // I HATE THIS SHIT

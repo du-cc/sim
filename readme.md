@@ -1,5 +1,7 @@
 # SIM Timetable Downloader
 
+## ! Readme isn't accurate ! It is based on old GUI based system.
+## Plans: turn this into api lib
 These scripts interact with Microsoft B2C Authentication system to log user into SIM API. Then get required version informations from SIM API backend (OutSystems) to able to interact with it. Finally request and parse the timetable JSON data and convert it into iCalendar (.ics) file.
 
 **ZERO** line of AI code. Only technical assistance (eg: analyze packets) was given.

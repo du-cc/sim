@@ -1,15 +1,12 @@
 import { log, request, parseCookies, store } from "./misc.mjs";
 import * as b2c from "./b2c.mjs";
 
+var logger = new log("b2c.mjs");
+
 var MICROSOFT_LOGIN_COOKIE = await store("get", "MICROSOFT_LOGIN_COOKIE");
 if (MICROSOFT_LOGIN_COOKIE == null) {
-  log(
-    "outsystems.mjs",
-    "SCRIPT",
-    "ERROR",
-    "No Microsoft Login Cookie Detected.",
-    "error"
-  ) & process.exit();
+  logger.log("ERROR", "no microsoft cookies present") 
+  process.exit();
 }
 
 var CSRF = await store("get", "csrf");
@@ -18,30 +15,30 @@ var nr_expire = await store("get", "nr_expire");
 var nr_cookies = await store("get", "nr_cookies");
 
 async function getVersion(module, endpoint) {
+// TODO: implementation
+
   // var moduleInfo_req = await request("get", `https://simattendance.simge.edu.sg/StudentApp/moduleservices/moduleinfo?${moduleVersion}`)
-  log("outsystems.mjs", "INFO", "FUNC", "getVersion", "info");
-  log("outsystems.mjs", "INFO", "STATUS", "Getting version info", "info");
 
-  var map = JSON.parse(await store("get", "map", null, "json", false));
+  // var map = JSON.parse(await store("get", "map", null, "json", false));
 
-  if (!map[module]) {
-    log(
-      "outsystems.mjs",
-      "getVersion",
-      "ERROR",
-      `(MODULE: ${module}) not found in map.js!`,
-      "error"
-    ) & process.exit();
-  }
-  if (!map[module].endpoints[endpoint]) {
-    log(
-      "outsystems.mjs",
-      "getVersion",
-      "ERROR",
-      `(ENDPOINT: ${endpoint}) not found in map.js!`,
-      "error"
-    ) & process.exit();
-  }
+  // if (!map[module]) {
+  //   log(
+  //     "outsystems.mjs",
+  //     "getVersion",
+  //     "ERROR",
+  //     `(MODULE: ${module}) not found in map.js!`,
+  //     "error"
+  //   ) & process.exit();
+  // }
+  // if (!map[module].endpoints[endpoint]) {
+  //   log(
+  //     "outsystems.mjs",
+  //     "getVersion",
+  //     "ERROR",
+  //     `(ENDPOINT: ${endpoint}) not found in map.js!`,
+  //     "error"
+  //   ) & process.exit();
+  // }
 
   log("outsystems.mjs", "getVersion", "FETCH", "apiVersion, moduleVersion");
 
