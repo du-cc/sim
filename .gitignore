@@ -1,4 +1,4 @@
 /node_modules/
-/backend/data/
+/src/data/
 /*.ics
 /out_multi
