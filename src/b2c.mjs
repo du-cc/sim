@@ -6,9 +6,9 @@
 // ESTSAUTHPERSISTENT Cookie
 // const MICROSOFT_LOGIN_COOKIE =
 
-import { log, request, parseCookies } from "./misc.mjs";
+import { Log, request, parseCookies } from "./misc.mjs";
 
-var logger = new log("b2c.mjs");
+var logger = new Log("b2c.mjs");
 
 export async function authenticate(MICROSOFT_LOGIN_COOKIE) {
   // start
@@ -115,5 +115,5 @@ export async function authenticate(MICROSOFT_LOGIN_COOKIE) {
   SAML = (await SAML.text()).match(/value\=\'(.*?)\'\//)[1];
   logger.log("INFO", "saml");
 
-  return [SAML, simCookies];
+  return { saml: SAML, cookie: simCookies };
 }

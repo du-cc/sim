@@ -52,7 +52,7 @@ export async function request(method, url, args) {
   return response;
 }
 
-export class log {
+export class Log {
   constructor(script) {
     this.script = script;
   }
@@ -93,24 +93,26 @@ export function parseCookies(header) {
     .join("; "); // Join for the request header
 }
 
-export async function store(action, v, data, e = null, secret = true) {
-  var end = e == null ? "txt" : e;
-
-  const subFolder = secret ? "data" : ".";
-  const targetPath = path.join(__dirname, subFolder, `${v}.${end}`);
-
-  if (action == "get") {
-    if (!(await files.exists(targetPath))) {
-      return null;
-    }
-    return await files.read(targetPath);
+export class Store {
+  constructor(secret = true) {
+    this.dir = path.join(__dirname, secret ? "data" : ".");
   }
-
-  if (action == "write") {
-    return await files.write(targetPath, data);
+ 
+  _path(name, ext) {
+    return path.join(this.dir, `${name}.${ext ?? "txt"}`);
   }
-
-  if (action == "delete") {
-    return await files.remove(targetPath);
+ 
+  async get(name, ext) {
+    const target = this._path(name, ext);
+    if (!(await files.exists(target))) return null;
+    return files.read(target);
+  }
+ 
+  async write(name, data, ext) {
+    return files.write(this._path(name, ext), data);
+  }
+ 
+  async delete(name, ext) {
+    return files.remove(this._path(name, ext));
   }
 }
