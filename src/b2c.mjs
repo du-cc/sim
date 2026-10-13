@@ -79,7 +79,7 @@ export async function authenticate(MICROSOFT_LOGIN_COOKIE) {
   logger.log("SUCCESS", "init done, now authenticating");
 
   var auth = await request("get", authUrl, {
-    cookie: MICROSOFT_LOGIN_COOKIE,
+    cookie: "ESTSAUTHPERSISTENT=" + MICROSOFT_LOGIN_COOKIE,
     redirect: false,
   });
 

@@ -2,3 +2,4 @@
 /src/data/
 /*.ics
 /out_multi
+/tests/

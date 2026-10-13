@@ -6,7 +6,7 @@ export class OutSystems {
     this.nr_cookies = nr_cookies;
   }
 
-  async fetchModuleVersion() {
+  static async fetchModuleVersion() {
     return (
       await (
         await request(
@@ -17,7 +17,7 @@ export class OutSystems {
     ).versionToken;
   }
 
-  async fetchApiVersion(url) {
+  static async fetchApiVersion(url) {
     var endpoint = url.match(/[^\/]+$/)[0];
     var version_url =
       "https://simattendance.simge.edu.sg/StudentApp/scripts/" +
@@ -108,7 +108,7 @@ export class OutSystems {
       nr_cookies[i] = nr_cookies[i].replace(/ Max-Age=.*/g, "");
     }
 
-    nr_expire = new Date();
+    var nr_expire = new Date();
     nr_expire.setSeconds(nr_expire.getSeconds() + nr_cookies_age);
     nr_expire = nr_expire.getTime();
     // await store("write", "nr_expire", nr_expire);
@@ -122,13 +122,21 @@ export class OutSystems {
     var nr_cookies = parseCookies(nr_cookies);
     // log("outsystems.mjs", "SIM-Auth", "EXTRACT", `nr_cookies: ${nr_cookies}`);
 
+    this.nr_cookies = nr_cookies
+    this.csrf = sCSRF
     return { cookie: nr_cookies, expire: nr_expire, csrf: sCSRF };
   }
 
-  async interact(url, versionTokens, data) {
+  async interact(url, versionInfo, data) {
+    var body = data;
+    body.versionInfo = {
+      moduleVersion: versionInfo.moduleVersion,
+      apiVersion: versionInfo.apiVersion,
+    };
+
     return await request("POST", url, {
       cookie: this.nr_cookies,
-      body: JSON.stringify(data),
+      body: JSON.stringify(body),
       bodyType: "application/json",
       csrf: this.csrf,
     });
