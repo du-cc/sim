@@ -28,7 +28,11 @@ var url = "REDACTED"; // api full url
 var auth = await b2c.authenticate("COOKIE"); // ESTSAUTHPERSISTENT cookie, authenticates Microsoft b2c
 
 var os = new OutSystems();
-var os_auth = await os.authenticate(auth.saml, auth.cookie); // authenticates outsystems api
+
+// authenticate via b2c's saml
+var os_auth = await os.authenticate(auth.saml, auth.cookie);
+// OR use existing credentials
+var os_2 = new Outsystems(csrf, nrCookies);
 
 // fetches version info
 var versionInfo = {
@@ -44,4 +48,9 @@ console.log(JSON.stringify(await out.json()));
 
 ## Development
 
-This repo has already done the most difficult part (Authentication and VersionData) fetching. You can expand it to interact with more API endpoints (eg: Room Booking).
+### Integrations
+- [sim-calendar](https://github.com/du-cc/sim-calendar) - Extracts class schedule and convert them into .ics file.
+
+### AI
+- Code: None
+- Other: Assist on analyzing network traffic
