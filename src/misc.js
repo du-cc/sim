@@ -1,7 +1,7 @@
 // ignore this spaghetti function
 // I added the body last and lazy to modify all other existing function calls
 // If it works, dont touch it --Random dev
-export async function request(method, url, args) {
+async function request(method, url, args) {
   // var host = url.match(/https:\/\/(.*?)\//)[1];
   var response;
 
@@ -48,7 +48,7 @@ export async function request(method, url, args) {
 
 // I HATE THIS SHIT
 // thx stackoverflow :)
-export function parseCookies(header) {
+function parseCookies(header) {
   const cookies = Array.isArray(header)
     ? header
     : header.split(/,(?=\s*[^=]+=[^;]+)/); // Split by comma only if followed by a key=value
@@ -59,26 +59,4 @@ export function parseCookies(header) {
     .join("; "); // Join for the request header
 }
 
-export class Store {
-  constructor(secret = true) {
-    this.dir = path.join(__dirname, secret ? "data" : ".");
-  }
- 
-  _path(name, ext) {
-    return path.join(this.dir, `${name}.${ext ?? "txt"}`);
-  }
- 
-  async get(name, ext) {
-    const target = this._path(name, ext);
-    if (!(await files.exists(target))) return null;
-    return files.read(target);
-  }
- 
-  async write(name, data, ext) {
-    return files.write(this._path(name, ext), data);
-  }
- 
-  async delete(name, ext) {
-    return files.remove(this._path(name, ext));
-  }
-}
+module.exports = { request, parseCookies };

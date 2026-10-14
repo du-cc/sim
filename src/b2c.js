@@ -6,9 +6,9 @@
 // ESTSAUTHPERSISTENT Cookie
 // const MICROSOFT_LOGIN_COOKIE =
 
-import { Log, request, parseCookies } from "./misc.mjs";
+const { request, parseCookies } = require("./misc");
 
-export async function authenticate(MICROSOFT_LOGIN_COOKIE) {
+async function authenticate(MICROSOFT_LOGIN_COOKIE) {
   // start
   // flow for getting stateProperties
 
@@ -99,3 +99,5 @@ export async function authenticate(MICROSOFT_LOGIN_COOKIE) {
 
   return { saml: SAML, cookie: simCookies };
 }
+
+module.exports = { authenticate };

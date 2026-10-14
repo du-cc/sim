@@ -1,6 +1,6 @@
-import { request, parseCookies } from "./misc.mjs";
+const { request, parseCookies } = require("./misc");
 
-export class OutSystems {
+class OutSystems {
   constructor(csrf, nr_cookies) {
     this.csrf = csrf;
     this.nr_cookies = nr_cookies;
@@ -142,3 +142,5 @@ export class OutSystems {
     });
   }
 }
+
+module.exports = { OutSystems };
