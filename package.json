@@ -5,7 +5,6 @@
   "main": "main.js",
   "type": "module",
   "scripts": {
-    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,10 +19,5 @@
   "bugs": {
     "url": "https://github.com/du-cc/sim/issues"
   },
-  "homepage": "https://github.com/du-cc/sim#readme",
-  "dependencies": {
-    "child_process": "^1.0.2",
-    "files": "^3.0.2",
-    "path": "^0.12.7"
-  }
+  "homepage": "https://github.com/du-cc/sim#readme"
 }

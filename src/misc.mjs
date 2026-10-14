@@ -1,9 +1,3 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-import * as files from "files";
-
 // ignore this spaghetti function
 // I added the body last and lazy to modify all other existing function calls
 // If it works, dont touch it --Random dev
@@ -50,34 +44,6 @@ export async function request(method, url, args) {
   response = await fetch(url, options);
 
   return response;
-}
-
-export class Log {
-  constructor(script) {
-    this.script = script;
-  }
-
-  log(action, data) {
-    if (action.toUpperCase() == "ERROR") {
-      return console.error(
-        "\x1b[31m%s\x1b[0m",
-        `[${this.script}] ${action} - ${data}`,
-      );
-    }
-    if (action.toUpperCase() == "INFO") {
-      return console.log(
-        "\x1b[34m%s\x1b[0m",
-        `[${this.script}] ${action} - ${data}`,
-      );
-    }
-    if (action.toUpperCase() == "SUCCESS") {
-      return console.log(
-        "\x1b[32m%s\x1b[0m",
-        `[${this.script}] ${action} - ${data}`,
-      );
-    }
-    return console.log(`[${script}][${module}] ${action} - ${data}`);
-  }
 }
 
 // I HATE THIS SHIT

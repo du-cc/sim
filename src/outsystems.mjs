@@ -1,4 +1,4 @@
-import { Log, request, parseCookies, Store } from "./misc.mjs";
+import { request, parseCookies } from "./misc.mjs";
 
 export class OutSystems {
   constructor(csrf, nr_cookies) {
@@ -64,7 +64,7 @@ export class OutSystems {
     // Works.................
     // Thanks for listening (reading) to my TED Talk :)
     if (token_text.includes("UNABLE")) {
-      console.log("outsystems.mjs", "ASS");
+      throw new Error("Unknown error on authenticating SAML");
       process.exit();
     }
     // log("outsystems.mjs", "INFO", "STATUS", "Log in success!", "success");
@@ -122,8 +122,8 @@ export class OutSystems {
     var nr_cookies = parseCookies(nr_cookies);
     // log("outsystems.mjs", "SIM-Auth", "EXTRACT", `nr_cookies: ${nr_cookies}`);
 
-    this.nr_cookies = nr_cookies
-    this.csrf = sCSRF
+    this.nr_cookies = nr_cookies;
+    this.csrf = sCSRF;
     return { cookie: nr_cookies, expire: nr_expire, csrf: sCSRF };
   }
 
