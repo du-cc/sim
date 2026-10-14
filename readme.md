@@ -16,13 +16,14 @@ Contains full set of scripts to fully authenticate and interact with MySIMApp's 
 
 Download via git
 ```bash
-git clone https://github.com/du-cc/sim.git
+npm install https://github.com/du-cc/sim.git
 ```
 
 ## Example Usage
 ```js
-import * as b2c from "../src/b2c.mjs";
-import { OutSystems } from "../src/outsystems.mjs";
+const SIM = require("sim");
+const OutSystems = SIM.OutSystems;
+const b2c = SIM.B2c;
 
 var url = "REDACTED"; // api full url
 var auth = await b2c.authenticate("COOKIE"); // ESTSAUTHPERSISTENT cookie, authenticates Microsoft b2c
